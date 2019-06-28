@@ -81,6 +81,33 @@ SET(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 SET(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 SET(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 
+# parse list of files in ${SEARCH_PATH} to find names of components
+# ${FILE_PATTERN} is cmake globbing expression for file() command used to create list of files
+# the ${COMPONENT_REGEX} is used to detect the component using string(REGEX MATCH...) the CMAKE_MATCH_1 is used to find the name of component
+# COMPONENTS_VAR_NAME - name of variable to store the output to
+FUNCTION (STM32_FIND_COMPONENTS SEARCH_PATH FILE_PATTERN COMPONENT_REGEX COMPONENTS_VAR_NAME)
+    SET(FILE_LIST)
+    # list matching files
+    FILE(GLOB FILE_LIST
+            LIST_DIRECTORIES false
+            RELATIVE "${SEARCH_PATH}"
+            "${SEARCH_PATH}/${FILE_PATTERN}")
+
+    # now lets see what matches the regex
+    FOREACH (COMPONENT_FILE ${FILE_LIST})
+        MESSAGE(STATUS "COMPONENT_FILE: ${COMPONENT_FILE}")
+        string(REGEX MATCH ${COMPONENT_REGEX} IS_MATCH ${COMPONENT_FILE})
+        if (IS_MATCH)
+            MESSAGE(STATUS "Match:  ${CMAKE_MATCH_1}")
+            # we got match lets store it to temp variable
+            LIST(APPEND COMPONENTS_TEMP ${CMAKE_MATCH_1})
+        endif ()
+    ENDFOREACH ()
+     MESSAGE(STATUS "COMPONENTS_TEMP: ${COMPONENTS_TEMP}")
+    # storee the list into parent scop (returning value)
+    SET(${COMPONENTS_VAR_NAME} ${COMPONENTS_TEMP} PARENT_SCOPE)
+ENDFUNCTION()
+
 FUNCTION(STM32_ADD_HEX_BIN_TARGETS TARGET)
     IF(EXECUTABLE_OUTPUT_PATH)
       SET(FILENAME "${EXECUTABLE_OUTPUT_PATH}/${TARGET}")
