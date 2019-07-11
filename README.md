@@ -83,6 +83,8 @@ You can use cmake variables below to tune the generated linker. To specify a cus
 * `STM32_SET_TARGET_PROPERTIES(TARGET)` - sets all needed parameters and compiler flags for target.
 * `STM32_GENERATE_LIBRARIES(NAME SOURCES LIBRARIES)` - generates libraries for all chip types in family. Resulting libraries stored in LIBRARIES and have names in ${NAME}_${FAMILY}_${CHIP_TYPE} format.
 
+* `STM32_HAL_DISCOVER_COMPONENTS=ON|OFF` - The available component are hardcoded into cmake files, it may happen that the definitions are not updated as soon as the new HAL drivers are released. Setting this flag enables alternative and automatic component discovery based on file names.
+
 # ChibiOS Support
 
 This project also supports ChibiOS v3.x.x and ChibiOS v16.x.x (both nil and rt kernels).
